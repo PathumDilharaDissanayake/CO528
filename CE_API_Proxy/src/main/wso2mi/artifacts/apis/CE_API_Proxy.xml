@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/ce" name="CE_API_Proxy" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" uri-template="/">
+        <inSequence>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/students">
+        <inSequence>
+            <log category="INFO" logMessageID="true" logFullPayload="true">
+                <message></message>
+            </log>
+            <call description="gets all the student information">
+                <endpoint key="students"/>
+            </call>
+            <script language="js"><![CDATA[var input = mc.getPayloadJSON();
+var arr = [];
+
+for (var key in input) {
+    arr.push(input[key]);
+}
+
+mc.setPayloadJSON({
+    students: arr
+});
+]]></script>
+            <datamapper config="resources:datamapper/new_student_datamapper/new_student_datamapper.dmc" inputSchema="resources:datamapper/new_student_datamapper/new_student_datamapper_inputSchema.json" outputSchema="resources:datamapper/new_student_datamapper/new_student_datamapper_outputSchema.json"/>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/projects">
+        <inSequence>
+            <log category="INFO" logMessageID="true" logFullPayload="true">
+                <message></message>
+            </log>
+            <call>
+                <endpoint key="projects"/>
+            </call>
+            <script language="js"><![CDATA[var input = mc.getPayloadJSON();
+var arr = [];
+
+for (var key in input) {
+    if (input.hasOwnProperty(key)) {
+        arr.push(input[key]);
+    }
+}
+
+mc.setPayloadJSON({
+    projects: arr
+});
+]]></script>
+            <datamapper config="resources:datamapper/project_data_mapper/project_data_mapper.dmc" inputSchema="resources:datamapper/project_data_mapper/project_data_mapper_inputSchema.json" outputSchema="resources:datamapper/project_data_mapper/project_data_mapper_outputSchema.json"/>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/staff">
+        <inSequence>
+            <log category="INFO" logMessageID="false" logFullPayload="false">
+                <message></message>
+            </log>
+            <call>
+                <endpoint key="staff"/>
+            </call>
+            <script language="js"><![CDATA[var input = mc.getPayloadJSON();
+var arr = [];
+
+for (var key in input) {
+    if (input.hasOwnProperty(key)) {
+        var staffMember = input[key];
+        staffMember.email = key;   // preserve the dynamic key if needed
+        arr.push(staffMember);
+    }
+}
+
+mc.setPayloadJSON({
+    staff: arr
+});
+]]></script>
+            <datamapper config="resources:datamapper/staff_data_mapper/staff_data_mapper.dmc" inputSchema="resources:datamapper/staff_data_mapper/staff_data_mapper_inputSchema.json" outputSchema="resources:datamapper/staff_data_mapper/staff_data_mapper_outputSchema.json"/>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/events">
+        <inSequence>
+            <log category="INFO" logMessageID="false" logFullPayload="false">
+                <message></message>
+            </log>
+            <call>
+                <endpoint key="events"/>
+            </call>
+            <script language="js"><![CDATA[var input = mc.getPayloadJSON();
+
+mc.setPayloadJSON({
+    events: input.data
+});
+]]></script>
+            <datamapper config="resources:datamapper/events_data_mapper/events_data_mapper.dmc" inputSchema="resources:datamapper/events_data_mapper/events_data_mapper_inputSchema.json" outputSchema="resources:datamapper/events_data_mapper/events_data_mapper_outputSchema.json"/>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/news">
+        <inSequence>
+            <log category="INFO" logMessageID="true" logFullPayload="true">
+                <message></message>
+            </log>
+            <call>
+                <endpoint key="news"/>
+            </call>
+            <datamapper config="resources:datamapper/news_data_mapper/news_data_mapper.dmc" inputSchema="resources:datamapper/news_data_mapper/news_data_mapper_inputSchema.json" outputSchema="resources:datamapper/news_data_mapper/news_data_mapper_outputSchema.json"/>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/publications">
+        <inSequence>
+            <log category="INFO" logMessageID="true" logFullPayload="true">
+                <message></message>
+            </log>
+            <call>
+                <endpoint key="publications"/>
+            </call>
+            <datamapper config="resources:datamapper/publications_data_mapper/publications_data_mapper.dmc" inputSchema="resources:datamapper/publications_data_mapper/publications_data_mapper_inputSchema.json" outputSchema="resources:datamapper/publications_data_mapper/publications_data_mapper_outputSchema.json"/>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+</api>
