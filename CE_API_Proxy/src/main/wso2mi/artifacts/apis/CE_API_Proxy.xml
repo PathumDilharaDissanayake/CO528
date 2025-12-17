@@ -115,7 +115,7 @@ mc.setPayloadJSON({
             <call>
                 <endpoint key="news"/>
             </call>
-            <datamapper config="resources:datamapper/news_data_mapper/news_data_mapper.dmc" inputSchema="resources:datamapper/news_data_mapper/news_data_mapper_inputSchema.json" outputSchema="resources:datamapper/news_data_mapper/news_data_mapper_outputSchema.json"/>
+            <datamapper config="resources:datamapper/new_news_datamapper/new_news_datamapper.dmc" inputSchema="resources:datamapper/new_news_datamapper/new_news_datamapper_inputSchema.json" outputSchema="resources:datamapper/new_news_datamapper/new_news_datamapper_outputSchema.json"/>
             <respond/>
         </inSequence>
         <faultSequence>
