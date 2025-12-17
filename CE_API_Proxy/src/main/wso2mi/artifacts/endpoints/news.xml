@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <endpoint name="news" xmlns="http://ws.apache.org/ns/synapse">
-    <http method="get"   uri-template="https://portal.ce.pdn.ac.lk/api/news/v1/">
+    <http method="get" uri-template="https://portal.ce.pdn.ac.lk/api/news/v1">
         <suspendOnFailure>
             <initialDuration>-1</initialDuration>
             <progressionFactor>1</progressionFactor>

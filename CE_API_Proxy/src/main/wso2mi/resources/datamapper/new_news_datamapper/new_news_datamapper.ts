@@ -6,39 +6,47 @@ declare var DM_PROPERTIES: any;
 * inputType : "JSON",
 */
 interface Root {
-    data: {
-        id: number
-        title: string
-        description: string
-        url: string
-        author: string
-        image: string
-        link_url: string
-        link_caption: string
-        published_at: string
-        created_at: string
-        updated_at: string
-    }[]
-    links: {
-        first: string
-        last: string
-        prev: string
-        next: string
+    $schema: string
+    type: string
+    properties: {
+        data: {
+            type: string
+            items: {
+                type: string
+                properties: {
+                    id: {
+                        type: string
+                    }
+                    title: {
+                        type: string
+                    }
+                    description: {
+                        type: string
+                    }
+                    url: {
+                        type: string
+                    }
+                    author: {
+                        type: string
+                    }
+                    image: {
+                        type: string
+                    }
+                    published_at: {
+                        type: string
+                    }
+                    created_at: {
+                        type: string
+                    }
+                    updated_at: {
+                        type: string
+                    }
+                }
+                required: string[]
+            }
+        }
     }
-    meta: {
-        current_page: number
-        from: number
-        last_page: number
-        links: {
-            url: string
-            label: string
-            active: boolean
-        }[]
-        path: string
-        per_page: number
-        to: number
-        total: number
-    }
+    required: string[]
 }
 
 
@@ -46,40 +54,36 @@ interface Root {
 * title : "root",
 * outputType : "JSON",
 */
-interface Root {
-    data: {
-        id: number
-        title: string
-        description: string
-        url: string
-        author: string
-        image: string
-        link_url: string
-        link_caption: string
-        published_at: string
-        created_at: string
-        updated_at: string
-    }[]
-    links: {
-        first: string
-        last: string
-        prev: string
-        next: string
+interface OutputRoot {
+    $schema: string
+    type: string
+    properties: {
+        newsArticles: {
+            type: string
+            items: {
+                type: string
+                properties: {
+                    articleId: {
+                        type: string
+                    }
+                    headline: {
+                        type: string
+                    }
+                    summary: {
+                        type: string
+                    }
+                    coverImage: {
+                        type: string
+                    }
+                    publishedDate: {
+                        type: string
+                    }
+                }
+                required: string[]
+            }
+        }
     }
-    meta: {
-        current_page: number
-        from: number
-        last_page: number
-        links: {
-            url: string
-            label: string
-            active: boolean
-        }[]
-        path: string
-        per_page: number
-        to: number
-        total: number
-    }
+    required: string[]
 }
 
 
@@ -87,11 +91,41 @@ interface Root {
  * functionName : map_S_root_S_root
  * inputVariable : inputroot
 */
-export function mapFunction(input: Root): Root {
-    return {
-        data: input.data,
-        links: input.links,
-        meta: input.meta
-    }
-}
+// export function mapFunction(input: Root): OutputRoot {
+//     return {
+//         required: input.required,
+//         properties: {
+//             newsArticles: input.properties.data
+//         },
+//         type: input.type
+//     }
+// }
 
+/**
+ * functionName : map_S_root_S_root
+ * inputVariable : inputroot
+*/
+export function mapFunction(input: Root): OutputRoot {
+    // We are returning a structure that matches OutputRoot
+    return {
+        $schema: "http://json-schema.org/draft-04/schema#",
+        type: "object",
+        required: ["newsArticles"],
+        properties: {
+            newsArticles: {
+                type: "array",
+                items: {
+                    type: "object",
+                    properties: {
+                        articleId: { type: "string" },
+                        headline: { type: "string" },
+                        summary: { type: "string" },
+                        coverImage: { type: "string" },
+                        publishedDate: { type: "string" }
+                    },
+                    required: ["articleId", "headline"]
+                }
+            }
+        }
+    };
+}

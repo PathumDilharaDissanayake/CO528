@@ -107,20 +107,73 @@ mc.setPayloadJSON({
         <faultSequence>
         </faultSequence>
     </resource>
+<!--    <resource methods="GET" uri-template="/news">-->
+<!--        <inSequence>-->
+<!--            <log category="INFO" logMessageID="true" logFullPayload="true">-->
+<!--                <message></message>-->
+<!--            </log>-->
+<!--            <call>-->
+<!--                <endpoint key="news"/>-->
+<!--            </call>-->
+<!--            <script language="js"><![CDATA[var payload = mc.getPayloadJSON();-->
+<!--// Add your logic here, e.g., payload.status = "processed";-->
+<!--mc.setPayloadJSON(payload);]]></script>-->
+<!--            <datamapper config="resources:datamapper/new_news_datamapper/new_news_datamapper.dmc" inputSchema="resources:datamapper/new_news_datamapper/new_news_datamapper_inputSchema.json" outputSchema="resources:datamapper/new_news_datamapper/new_news_datamapper_outputSchema.json"/>-->
+<!--            <respond/>-->
+<!--        </inSequence>-->
+<!--        <faultSequence>-->
+<!--        </faultSequence>-->
+<!--    </resource>-->
+
+
     <resource methods="GET" uri-template="/news">
         <inSequence>
-            <log category="INFO" logMessageID="true" logFullPayload="true">
-                <message></message>
+            <property name="HTTP_METHOD" value="GET" scope="axis2"/>
+            <header name="Accept" value="application/json" scope="transport"/>
+
+            <log category="INFO" level="full">
+                <property name="Message" value="Requesting News Backend"/>
             </log>
+
             <call>
                 <endpoint key="news"/>
             </call>
-            <datamapper config="resources:datamapper/new_news_datamapper/new_news_datamapper.dmc" inputSchema="resources:datamapper/new_news_datamapper/new_news_datamapper_inputSchema.json" outputSchema="resources:datamapper/new_news_datamapper/new_news_datamapper_outputSchema.json"/>
-            <respond/>
+
+            <filter source="$axis2:HTTP_SC" regex="200">
+                <then>
+                    <property name="messageType" value="application/json" scope="axis2"/>
+                    <script language="js"><![CDATA[
+                var payload = mc.getPayloadJSON();
+                mc.setPayloadJSON(payload);
+            ]]></script>
+                    <datamapper config="resources:datamapper/new_news_datamapper/new_news_datamapper.dmc"
+                                inputSchema="resources:datamapper/new_news_datamapper/new_news_datamapper_inputSchema.json"
+                                outputSchema="resources:datamapper/new_news_datamapper/new_news_datamapper_outputSchema.json"/>
+                    <respond/>
+                </then>
+                <else>
+                    <log level="custom">
+                        <property name="ERROR" value="Backend returned an error code"/>
+                        <property name="STATUS" expression="$axis2:HTTP_SC"/>
+                    </log>
+                    <payloadFactory media-type="json">
+                        <format>{"error": "Backend failed", "code": "$1"}</format>
+                        <args>
+                            <arg evaluator="xml" expression="$axis2:HTTP_SC"/>
+                        </args>
+                    </payloadFactory>
+                    <respond/>
+                </else>
+            </filter>
         </inSequence>
         <faultSequence>
+            <log level="full">
+                <property name="Message" value="An error occurred in the News Resource"/>
+            </log>
         </faultSequence>
     </resource>
+
+    
     <resource methods="GET" uri-template="/publications">
         <inSequence>
             <log category="INFO" logMessageID="true" logFullPayload="true">
